@@ -18,18 +18,23 @@ async function initialize() {
   });
 
 
-  const panorama = new google.maps.StreetViewPanorama(
-    document.getElementById("pano"),
-    {
-      position: { lat: 42.345573, lng: -71.098326 },
-      pov: {
-        heading: 34,
-        pitch: 10,
-      },
-      addressControl: false,
-    },
-  );
+function processSVData(data, status) {
+  if (status == google.maps.StreetViewStatus.OK) {
+    console.log("EE " + data.location.latLng.toUrlValue(6));
+    console.log(data);
 
+    const panorama = new google.maps.StreetViewPanorama(
+      document.getElementById("pano"), {
+        position: data.location.latLng,
+        pov: {
+          heading: 34,
+          pitch: 10,
+        },
+        addressControl: false,
+      }
+    );
+  } else generateRandomPoint();
+}
 
   map.addListener("click", (e) => {
     placeMarker(e.latLng, map);
@@ -47,12 +52,15 @@ async function initialize() {
       });
     }
   }
+  
+function generateRandomPoint() {
+  var sv = new google.maps.StreetViewService();
+  sv.getPanoramaByLocation(
+    new google.maps.LatLng(Math.random() * 180 - 90, Math.random() * 360 - 180), 500, processSVData
+  );
 }
 
-
+generateRandomPoint();
+}
 
 initialize();
-
-
-
-
