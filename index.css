@@ -1,35 +1,32 @@
-.center {
+#logo {
   display: block;
   margin-left: auto;
   margin-right: auto;
 }
 
-
-/* 
- * Always set the map height explicitly to define the size of the div element
- * that contains the map. 
- */
  #map {
+  order: 2;
   height: 50vh;
   width: 50vh;
-  position: fixed;
-  top: 250px;
-  left: 74%;
-
+  bottom: 15%;
+  align-self: flex-end;
 }
 
-#streetview,
 #pano {
-  float: left;
+  display: block;
+  order: 1;
   height: 80vh;
-  width: 140vh;
-  bottom: 50%;
-  left: 1vh
+  width: 100vw;
+  align-self: flex-end;
 }
 
-html,body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
+html{
   background-color: rgb(42, 121, 117);
+}
+
+.flex-container{
+  display: flex;
+  width: 100%;
+  height: 80vh;
+  
 }
