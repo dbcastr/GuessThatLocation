@@ -1,0 +1,35 @@
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+/* 
+ * Always set the map height explicitly to define the size of the div element
+ * that contains the map. 
+ */
+ #map {
+  height: 50vh;
+  width: 50vh;
+  position: fixed;
+  top: 250px;
+  left: 74%;
+
+}
+
+#streetview,
+#pano {
+  float: left;
+  height: 80vh;
+  width: 140vh;
+  bottom: 50%;
+  left: 1vh
+}
+
+html,body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: rgb(42, 121, 117);
+}
