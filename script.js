@@ -1,85 +1,118 @@
-// import {GoogleMapsAPIKey, MapID} from "./keys.js"
+//import { GoogleMapsAPIKey, MapID } from "./keys.js";
 
-var playerMarker;
-var playerLat;
-var playerLng;
+let playerMarker, playerLat, playerLng;
+let locationMarker, locationLatLng;
+let map;
 
-var locationMarker;
-var locationLatLng;
-var map;
+// Initialize Google Maps API
+async function loadGoogleMapsAPI() {
+  return new Promise((resolve, reject) => {
+    if (window.google?.maps) {
+      resolve();
+      return;
+    }
 
-(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
-  ({key: GoogleMapsAPIKey, v: "weekly"});
+    const script = document.createElement("script");
+    script.src = `https://maps.googleapis.com/maps/api/js?key=APIKEYYY&v=weekly&callback=initMap`;
+    script.async = true;
+    script.defer = true;
+    script.onerror = () => reject(new Error("Google Maps API failed to load."));
+    document.head.appendChild(script);
 
+    window.initMap = resolve;
+  });
+}
 
-function placeMarker(location, map) {
-  if ( playerMarker ) {
+// Places or updates a marker for the player
+function placeMarker(location) {
+  if (playerMarker) {
     playerMarker.setPosition(location);
   } else {
     playerMarker = new google.maps.Marker({
       position: location,
-      map: map
+      map,
     });
   }
 
+  playerLat = location.lat();
+  playerLng = location.lng();
 }
 
+// Generates a random Street View location
 function generateRandomPoint() {
-  var sv = new google.maps.StreetViewService();
-  sv.getPanoramaByLocation(
-    new google.maps.LatLng(Math.random() * 180 - 90, Math.random() * 360 - 180), 500, processSVData
+  const sv = new google.maps.StreetViewService();
+  const randomLocation = new google.maps.LatLng(
+    Math.random() * 180 - 90,
+    Math.random() * 360 - 180
   );
+
+  sv.getPanoramaByLocation(randomLocation, 500, processSVData);
 }
 
+// Processes Street View data
 function processSVData(data, status) {
-  if (status == google.maps.StreetViewStatus.OK) {
-    console.log("EE " + data.location.latLng.toUrlValue(6));
-    console.log(data);
+  if (status === google.maps.StreetViewStatus.OK) {
+    console.log("Street View Location:", data.location.latLng.toUrlValue(6));
+    
     locationLatLng = data.location.latLng;
 
-    const panorama = new google.maps.StreetViewPanorama(
-      document.getElementById("pano"), {
-        position: data.location.latLng,
-        pov: {
-          heading: 34,
-          pitch: 10,
-        },
-        disableDefaultUI: true,
-      }
-    );
-  } else generateRandomPoint();
-}
-
-function showLocation() {
-  locationMarker = new google.maps.Marker({
+    new google.maps.StreetViewPanorama(document.getElementById("pano"), {
       position: locationLatLng,
-      map: map
+      pov: { heading: 34, pitch: 10 },
+      disableDefaultUI: true,
     });
-
-    console.log(typeof(locationLatLng));
+  } else {
+    generateRandomPoint();
+  }
 }
 
-//Start of game load, GM Api
-async function initialize() {
-  const { Map } = await google.maps.importLibrary("maps");
-  const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary(
-    "marker",
-  );
+// Shows the randomly generated location marker
+function showLocation() {
 
-    map = new google.maps.Map(document.getElementById("map"), {
+  const svgMarker = {
+    path: "M-1.547 12l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM0 0q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z",
+    fillColor: "orange",
+    fillOpacity: 1,
+    strokeWeight: 0,
+    rotation: 0,
+    scale: 2,
+    anchor: new google.maps.Point(0, 20),
+  };
+
+  if (!locationLatLng) {
+    console.warn("Location not set yet.");
+    return;
+  }
+
+  if (!locationMarker) {
+    locationMarker = new google.maps.Marker({
+      position: locationLatLng,
+      map: map,
+      icon: svgMarker,
+    });
+  } else {
+    locationMarker.setPosition(locationLatLng);
+  }
+
+  console.log("Location marker placed at:", locationLatLng.toUrlValue(6));
+}
+
+// Initializes the game and Google Maps
+async function initialize() {
+  await loadGoogleMapsAPI();
+  
+  const { Map } = await google.maps.importLibrary("maps");
+  map = new Map(document.getElementById("map"), {
     center: { lat: 0, lng: 0 },
     streetViewControl: false,
     zoom: 2,
-    mapId: MapID,
+    mapId: "MAPID",
   });
 
-  map.addListener("click", (e) => {
-    placeMarker(e.latLng, map);
-    playerLat = e.latLng.lat();
-    playerLng = e.latLng.lng();
-  });
+  map.addListener("click", (e) => placeMarker(e.latLng));
 
   generateRandomPoint();
 }
 
+// Load the map when the script is ready
 initialize();
