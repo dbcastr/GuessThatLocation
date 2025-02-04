@@ -110,6 +110,7 @@ async function initialize() {
     streetViewControl: false,
     zoom: 2,
     mapId: "65a00b1ab9b6811",
+    disableDefaultUI: true,
   });
 
   map.addListener("click", (e) => placeMarker(e.latLng));
