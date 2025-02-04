@@ -13,7 +13,7 @@ async function loadGoogleMapsAPI() {
     }
 
     const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=APIKEY&v=weekly&callback=initMap`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=APIKEY&loading=async&callback=initMap&v=weekly`;
     script.async = true;
     script.defer = true;
     script.onerror = () => reject(new Error("Google Maps API failed to load."));
@@ -60,6 +60,7 @@ function processSVData(data, status) {
       position: locationLatLng,
       pov: { heading: 34, pitch: 10 },
       disableDefaultUI: true,
+      showRoadLabels: false,
     });
   } else {
     generateRandomPoint();
