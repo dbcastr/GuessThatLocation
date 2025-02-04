@@ -13,7 +13,7 @@ async function loadGoogleMapsAPI() {
     }
 
     const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=APIKEYYY&v=weekly&callback=initMap`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyCGeuZgEWBDFWzhBC6v3w7Z_ntm9oCEstE&v=weekly&callback=initMap`;
     script.async = true;
     script.defer = true;
     script.onerror = () => reject(new Error("Google Maps API failed to load."));
@@ -90,6 +90,9 @@ function showLocation() {
       map: map,
       icon: svgMarker,
     });
+
+    map.setZoom(7);
+    map.panTo(locationMarker.position);
   } else {
     locationMarker.setPosition(locationLatLng);
   }
@@ -106,7 +109,7 @@ async function initialize() {
     center: { lat: 0, lng: 0 },
     streetViewControl: false,
     zoom: 2,
-    mapId: "MAPID",
+    mapId: "65a00b1ab9b6811",
   });
 
   map.addListener("click", (e) => placeMarker(e.latLng));
